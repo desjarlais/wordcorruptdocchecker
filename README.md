@@ -4,3 +4,6 @@ I created this tool to fix corrupt Word documents (non-binary, just open xml fil
 
 ![ScreenShot](http://i.imgur.com/43TaZtV.jpg)
 
+There are still many other types of corrupt documents that I have not seen, so please free to submit questions or feedback in the Discussions section.
+
+ The tool requires the .NET framework version 4.5.1 or higher.

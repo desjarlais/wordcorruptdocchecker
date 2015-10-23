@@ -10,4 +10,4 @@ The tool requires the .NET framework version 4.5.1 or higher.
  
 To download a standalone version of the tool, it is avaiable at the following link:
 
-https://corruptdocchecker.codeplex.com/releases/view/617559
+http://wordcorruptdocchecker.codeplex.com/

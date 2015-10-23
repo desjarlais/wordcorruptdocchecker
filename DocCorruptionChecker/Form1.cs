@@ -79,7 +79,6 @@ namespace DocCorruptionChecker
                             {
                                 xdoc.Load(part.GetStream(FileMode.Open, FileAccess.Read));
                                 listBox1.Items.Add("This document does not contain invalid xml.");
-                                File.Delete(strDestFileName);
                             }
                             catch (XmlException) // check for invalid xml
                             {
@@ -212,6 +211,9 @@ namespace DocCorruptionChecker
                         }
                     }
                 }
+
+                // if the file doesn't contain invalid xml, delete the copied file outside the using block
+                File.Delete(strDestFileName);
             }
             catch (IOException ioe)
             {

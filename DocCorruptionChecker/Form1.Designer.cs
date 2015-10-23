@@ -116,7 +116,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Microsoft Word Open Xml Document Corruption Checker";
+            this.Text = "Word Corrupt Document Checker";
             this.ResumeLayout(false);
             this.PerformLayout();
 

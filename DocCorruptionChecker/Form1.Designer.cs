@@ -50,9 +50,9 @@
             // openFileDialog1
             // 
             this.openFileDialog1.DefaultExt = "\".docx\"";
-            this.openFileDialog1.FileName = "Document";
-            this.openFileDialog1.Filter = "\"Word Open XML Documents | *.docx; *.dotx; *.docm; *.dotm;*.txt\"";
+            this.openFileDialog1.Filter = "\"Word Open XML Documents | *.docx; *.dotx; *.docm; *.dotm\"";
             this.openFileDialog1.RestoreDirectory = true;
+            this.openFileDialog1.Title = "Select Word Document To Fix";
             // 
             // tbxFileName
             // 

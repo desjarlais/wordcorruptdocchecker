@@ -6,7 +6,7 @@ I created this tool to fix corrupt Word documents (non-binary, just open xml fil
 
 There are still many other types of corrupt documents that I have not seen, so please free to submit questions or feedback in the Discussions section.
 
-The tool requires the .NET framework version 4.5.1 or higher.
+The tool requires the .NET framework version 4.5.2 or higher.
  
 To download a standalone version of the tool, it is avaiable at the following link:
 

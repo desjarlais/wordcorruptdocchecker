@@ -8,6 +8,6 @@ There are still many other types of corrupt documents that I have not seen, so p
 
 The tool requires the .NET framework version 4.5.2 or higher.
  
-To download a standalone version of the tool, it is avaiable at the following link:
+To download a standalone version of the tool, go to the Release section of this page or use the following link:
 
 https://github.com/desjarlais/wordcorruptdocchecker/releases/tag/v1.2.0.4

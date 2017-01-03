@@ -5,11 +5,20 @@ using System.IO;
 using System.IO.Packaging;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace DocCorruptionChecker
 {
     public partial class Form1 : Form
     {
+        static List<string> nodes = new List<string>();
+        static StringBuilder sbNodeBuffer = new StringBuilder();
+        static StringBuilder sbChildNodeBuffer = new StringBuilder();
+
+        const string txtFallbackStart = "<mc:Fallback>";
+        const string txtFallbackEnd = "</mc:Fallback>";
+        public static string fixedFallback = string.Empty;
+
         public Form1()
         {
             InitializeComponent();
@@ -190,6 +199,42 @@ namespace DocCorruptionChecker
                                                     }
                                                 }
                                             }
+
+                                            // remove all fallback tags
+                                            // start by getting a list of all nodes/values
+                                            if (chkRemoveAllFallbackTags.Checked == true)
+                                            {
+                                                CharEnumerator charEnum = strDocText.GetEnumerator();
+                                                while (charEnum.MoveNext())
+                                                {
+                                                    // opening tag
+                                                    if (charEnum.Current == '<')
+                                                    {
+                                                        if (sbNodeBuffer.Length > 0)
+                                                        {
+                                                            nodes.Add(sbNodeBuffer.ToString());
+                                                            sbNodeBuffer.Clear();
+                                                        }
+                                                        Node(charEnum.Current);
+                                                    }
+                                                    // close tag
+                                                    else if (charEnum.Current == '>')
+                                                    {
+                                                        Node(charEnum.Current);
+                                                        nodes.Add(sbNodeBuffer.ToString());
+                                                        sbNodeBuffer.Clear();
+                                                    }
+                                                    // node text
+                                                    else
+                                                    {
+                                                        Node(charEnum.Current);
+                                                    }
+                                                }
+
+                                                listBox1.Items.Add("...removing all fallback tags");
+                                                GetAllNodes(strDocText);
+                                                strDocText = fixedFallback;
+                                            }
                                         }
                                         catch (FileFormatException ffe)
                                         {
@@ -243,6 +288,84 @@ namespace DocCorruptionChecker
             }
 
             Clipboard.SetText(buffer.ToString());
+        }
+
+        public static void Node(char input)
+        {
+            sbNodeBuffer.Append(input);
+        }
+
+        public static void TagText(char input)
+        {
+            sbChildNodeBuffer.Append(input);
+        }
+
+        public static void GetAllNodes(string originalText)
+        {
+            // check each node and add fallback tags only to the list
+            bool isFallback = false;
+            List<string> fallback = new List<string>();
+
+            foreach (object o in nodes)
+            {
+                if (o.ToString() == txtFallbackStart)
+                {
+                    isFallback = true;
+                }
+
+                if (isFallback)
+                {
+                    fallback.Add(o.ToString());
+                }
+
+                if (o.ToString() == txtFallbackEnd)
+                {
+                    isFallback = false;
+                }
+            }
+
+            ParseOutFallbackTags(fallback, originalText);
+        }
+
+        public static void ParseOutFallbackTags(List<string> input, string originalText)
+        {
+            // we should only have a list of fallback start tags, end tags and each tag in between
+            // the idea is to combine these start/middle/end tags into a long string
+            // then they can be replaced with an empty string
+            List<string> FallbackTagsAppended = new List<string>();
+            StringBuilder sbFallback = new StringBuilder();
+
+            foreach (object o in input)
+            {
+                if (o.ToString() == txtFallbackStart)
+                {
+                    sbFallback.Append(o);
+                    continue;
+                }
+                else if (o.ToString() == txtFallbackEnd)
+                {
+                    sbFallback.Append(o);
+                    FallbackTagsAppended.Add(sbFallback.ToString());
+                    sbFallback.Clear();
+                    continue;
+                }
+                else
+                {
+                    sbFallback.Append(o);
+                    continue;
+                }
+            }
+
+            sbFallback.Clear();
+
+            foreach (object o in FallbackTagsAppended)
+            {
+                originalText = originalText.Replace(o.ToString(), "");
+            }
+
+            // each set of fallback tags should now be removed from the text
+            // set it to the global variable so we can add it back into document.xml
+            fixedFallback = originalText;
         }
     }
 }

@@ -18,6 +18,10 @@ namespace DocCorruptionChecker
         const string txtFallbackStart = "<mc:Fallback>";
         const string txtFallbackEnd = "</mc:Fallback>";
         public static string fixedFallback = string.Empty;
+        public static string strOrigFileName = string.Empty;
+        public static string strDestPath = string.Empty;
+        public static string strExtension = string.Empty;
+        public static string strDestFileName = string.Empty;
 
         public Form1()
         {
@@ -35,14 +39,14 @@ namespace DocCorruptionChecker
 
         private void btnScanDocument_Click(object sender, EventArgs e)
         {
-            string strOrigFileName = tbxFileName.Text;
-            string strDestPath = Path.GetDirectoryName(strOrigFileName) + "\\";
-            string strExtension = Path.GetExtension(strOrigFileName);
-            string strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + strExtension;
-            listBox1.Items.Clear();
-
             try
             {
+                strOrigFileName = tbxFileName.Text;
+                strDestPath = Path.GetDirectoryName(strOrigFileName) + "\\";
+                strExtension = Path.GetExtension(strOrigFileName);
+                strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + strExtension;
+                listBox1.Items.Clear();
+
                 if ((File.GetAttributes(strOrigFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
                     listBox1.Items.Add("Document is Read-Only, unable to make changes.");
@@ -73,6 +77,12 @@ namespace DocCorruptionChecker
             catch (UnauthorizedAccessException uae)
             {
                 listBox1.Items.Add("Invalid file name. " + uae.Message);
+                return;
+            }
+            catch (ArgumentException ae)
+            {
+                listBox1.Items.Add("Invalid path." + ae.Message);
+                return;
             }
 
             try
@@ -90,7 +100,7 @@ namespace DocCorruptionChecker
                                 listBox1.Items.Add("This document does not contain invalid xml.");
 
                                 // if the file doesn't contain invalid xml, delete the copied file outside the using block
-                                File.Delete(strDestFileName);
+                                DeleteDestintationFile(strDestFileName);
                             }
                             catch (XmlException) // check for invalid xml
                             {
@@ -239,7 +249,7 @@ namespace DocCorruptionChecker
                                         catch (FileFormatException ffe)
                                         {
                                             listBox1.Items.Add("ERROR: " + ffe.Message);
-                                            File.Delete(strDestFileName);
+                                            DeleteDestintationFile(strDestFileName);
                                         }
 
                                         tw.Write(strDocText);
@@ -263,31 +273,49 @@ namespace DocCorruptionChecker
             catch (IOException ioe)
             {
                 listBox1.Items.Add("ERROR: " + ioe.Message);
-                File.Delete(strDestFileName);
+                DeleteDestintationFile(strDestFileName);
             }
             catch (FileFormatException ffe)
             {
                 listBox1.Items.Add("ERROR: File may be password protected OR " + ffe.Message);
-                File.Delete(strDestFileName);
+                DeleteDestintationFile(strDestFileName);
             }
             catch (Exception ex)
             {
                 listBox1.Items.Add("ERROR: " + ex.Message);
-                File.Delete(strDestFileName);
+                DeleteDestintationFile(strDestFileName);
+            }
+        }
+
+        public void DeleteDestintationFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
             }
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
-            StringBuilder buffer = new StringBuilder();
-
-            for (int i = 0; i < listBox1.Items.Count; i++)
+            try
             {
-                buffer.Append(listBox1.Items[i].ToString());
-                buffer.Append('\n');
-            }
+                if (listBox1.Items.Count > 0)
+                {
+                    StringBuilder buffer = new StringBuilder();
 
-            Clipboard.SetText(buffer.ToString());
+                    for (int i = 0; i < listBox1.Items.Count; i++)
+                    {
+                        buffer.Append(listBox1.Items[i].ToString());
+                        buffer.Append('\n');
+                    }
+
+                    Clipboard.SetText(buffer.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception" + ex.Message);
+            }
         }
 
         public static void Node(char input)

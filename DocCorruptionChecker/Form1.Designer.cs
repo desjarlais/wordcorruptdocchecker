@@ -45,9 +45,9 @@
             this.label1.Location = new System.Drawing.Point(24, 17);
             this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(95, 25);
+            this.label1.Size = new System.Drawing.Size(101, 25);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Filepath:";
+            this.label1.Text = "File path:";
             // 
             // openFileDialog1
             // 
@@ -59,7 +59,7 @@
             // tbxFileName
             // 
             this.tbxFileName.Location = new System.Drawing.Point(130, 12);
-            this.tbxFileName.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.tbxFileName.Margin = new System.Windows.Forms.Padding(6);
             this.tbxFileName.Name = "tbxFileName";
             this.tbxFileName.Size = new System.Drawing.Size(1042, 31);
             this.tbxFileName.TabIndex = 1;
@@ -67,7 +67,7 @@
             // btnBrowse
             // 
             this.btnBrowse.Location = new System.Drawing.Point(1188, 8);
-            this.btnBrowse.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnBrowse.Margin = new System.Windows.Forms.Padding(6);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(88, 44);
             this.btnBrowse.TabIndex = 2;
@@ -78,7 +78,7 @@
             // btnScanDocument
             // 
             this.btnScanDocument.Location = new System.Drawing.Point(1288, 8);
-            this.btnScanDocument.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnScanDocument.Margin = new System.Windows.Forms.Padding(6);
             this.btnScanDocument.Name = "btnScanDocument";
             this.btnScanDocument.Size = new System.Drawing.Size(172, 44);
             this.btnScanDocument.TabIndex = 3;
@@ -92,7 +92,7 @@
             this.listBox1.HorizontalScrollbar = true;
             this.listBox1.ItemHeight = 25;
             this.listBox1.Location = new System.Drawing.Point(30, 62);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.listBox1.Margin = new System.Windows.Forms.Padding(6);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(1426, 729);
             this.listBox1.TabIndex = 4;
@@ -100,7 +100,7 @@
             // btnCopy
             // 
             this.btnCopy.Location = new System.Drawing.Point(1236, 806);
-            this.btnCopy.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnCopy.Margin = new System.Windows.Forms.Padding(6);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(220, 50);
             this.btnCopy.TabIndex = 7;
@@ -120,8 +120,8 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1480, 871);
             this.Controls.Add(this.chkRemoveAllFallbackTags);
             this.Controls.Add(this.btnCopy);
@@ -130,9 +130,9 @@
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.tbxFileName);
             this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

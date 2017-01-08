@@ -17,6 +17,8 @@ namespace DocCorruptionChecker
 
         const string txtFallbackStart = "<mc:Fallback>";
         const string txtFallbackEnd = "</mc:Fallback>";
+        public static char prevChar = '<';
+        public bool isSelfContainedClosingTag = false;
         public static string fixedFallback = string.Empty;
         public static string strOrigFileName = string.Empty;
         public static string strDestPath = string.Empty;
@@ -217,9 +219,14 @@ namespace DocCorruptionChecker
                                                 CharEnumerator charEnum = strDocText.GetEnumerator();
                                                 while (charEnum.MoveNext())
                                                 {
+                                                    // keep track of previous char
+                                                    prevChar = charEnum.Current;
+
                                                     // opening tag
                                                     if (charEnum.Current == '<')
                                                     {
+                                                        // if we haven't hit a close, but hit another '<' char
+                                                        // we are not a true open tag so add it like a regular char
                                                         if (sbNodeBuffer.Length > 0)
                                                         {
                                                             nodes.Add(sbNodeBuffer.ToString());
@@ -230,6 +237,15 @@ namespace DocCorruptionChecker
                                                     // close tag
                                                     else if (charEnum.Current == '>')
                                                     {
+                                                        // there are 2 ways to close out a tag
+                                                        // 1. self contained tag like <w:sz w:val="28"/>
+                                                        // 2. standard xml <w:t>test</w:t>
+                                                        // if previous char is '/', then we are an end tag
+                                                        if (prevChar == '/' || isSelfContainedClosingTag == true)
+                                                        {
+                                                            Node(charEnum.Current);
+                                                            isSelfContainedClosingTag = false;
+                                                        }
                                                         Node(charEnum.Current);
                                                         nodes.Add(sbNodeBuffer.ToString());
                                                         sbNodeBuffer.Clear();
@@ -237,6 +253,11 @@ namespace DocCorruptionChecker
                                                     // node text
                                                     else
                                                     {
+                                                        // this is the second xml closing style, keep track of char
+                                                        if (prevChar == '<' && charEnum.Current == '/')
+                                                        {
+                                                            isSelfContainedClosingTag = true;
+                                                        }
                                                         Node(charEnum.Current);
                                                     }
                                                 }
@@ -386,6 +407,7 @@ namespace DocCorruptionChecker
 
             sbFallback.Clear();
 
+            // loop each item in the list and remove it from the document
             foreach (object o in FallbackTagsAppended)
             {
                 originalText = originalText.Replace(o.ToString(), "");

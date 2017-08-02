@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace DocCorruptionChecker
 {
-    public partial class Form1 : Form
+    public partial class frmMain : Form
     {
         static List<string> nodes = new List<string>();
         static StringBuilder sbNodeBuffer = new StringBuilder();
@@ -25,7 +25,7 @@ namespace DocCorruptionChecker
         public static string strExtension = string.Empty;
         public static string strDestFileName = string.Empty;
 
-        public Form1()
+        public frmMain()
         {
             InitializeComponent();
         }

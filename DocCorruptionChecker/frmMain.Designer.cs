@@ -1,6 +1,6 @@
 ﻿namespace DocCorruptionChecker
 {
-    partial class Form1
+    partial class frmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.label1 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tbxFileName = new System.Windows.Forms.TextBox();
@@ -42,10 +42,9 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(24, 17);
-            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label1.Location = new System.Drawing.Point(12, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(101, 25);
+            this.label1.Size = new System.Drawing.Size(50, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "File path:";
             // 
@@ -58,18 +57,16 @@
             // 
             // tbxFileName
             // 
-            this.tbxFileName.Location = new System.Drawing.Point(130, 12);
-            this.tbxFileName.Margin = new System.Windows.Forms.Padding(6);
+            this.tbxFileName.Location = new System.Drawing.Point(65, 6);
             this.tbxFileName.Name = "tbxFileName";
-            this.tbxFileName.Size = new System.Drawing.Size(1042, 31);
+            this.tbxFileName.Size = new System.Drawing.Size(523, 20);
             this.tbxFileName.TabIndex = 1;
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(1188, 8);
-            this.btnBrowse.Margin = new System.Windows.Forms.Padding(6);
+            this.btnBrowse.Location = new System.Drawing.Point(594, 4);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(88, 44);
+            this.btnBrowse.Size = new System.Drawing.Size(44, 22);
             this.btnBrowse.TabIndex = 2;
             this.btnBrowse.Text = "...";
             this.btnBrowse.UseVisualStyleBackColor = true;
@@ -77,10 +74,9 @@
             // 
             // btnScanDocument
             // 
-            this.btnScanDocument.Location = new System.Drawing.Point(1288, 8);
-            this.btnScanDocument.Margin = new System.Windows.Forms.Padding(6);
+            this.btnScanDocument.Location = new System.Drawing.Point(644, 4);
             this.btnScanDocument.Name = "btnScanDocument";
-            this.btnScanDocument.Size = new System.Drawing.Size(172, 44);
+            this.btnScanDocument.Size = new System.Drawing.Size(86, 22);
             this.btnScanDocument.TabIndex = 3;
             this.btnScanDocument.Text = "Fix Document";
             this.btnScanDocument.UseVisualStyleBackColor = true;
@@ -90,19 +86,16 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.ItemHeight = 25;
-            this.listBox1.Location = new System.Drawing.Point(30, 62);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(6);
+            this.listBox1.Location = new System.Drawing.Point(15, 31);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(1426, 729);
+            this.listBox1.Size = new System.Drawing.Size(715, 355);
             this.listBox1.TabIndex = 4;
             // 
             // btnCopy
             // 
-            this.btnCopy.Location = new System.Drawing.Point(1236, 806);
-            this.btnCopy.Margin = new System.Windows.Forms.Padding(6);
+            this.btnCopy.Location = new System.Drawing.Point(618, 403);
             this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(220, 50);
+            this.btnCopy.Size = new System.Drawing.Size(110, 25);
             this.btnCopy.TabIndex = 7;
             this.btnCopy.Text = "Copy Error Details";
             this.btnCopy.UseVisualStyleBackColor = true;
@@ -111,18 +104,20 @@
             // chkRemoveAllFallbackTags
             // 
             this.chkRemoveAllFallbackTags.AutoSize = true;
-            this.chkRemoveAllFallbackTags.Location = new System.Drawing.Point(29, 806);
+            this.chkRemoveAllFallbackTags.Location = new System.Drawing.Point(14, 403);
+            this.chkRemoveAllFallbackTags.Margin = new System.Windows.Forms.Padding(2);
             this.chkRemoveAllFallbackTags.Name = "chkRemoveAllFallbackTags";
-            this.chkRemoveAllFallbackTags.Size = new System.Drawing.Size(294, 29);
+            this.chkRemoveAllFallbackTags.Size = new System.Drawing.Size(150, 17);
             this.chkRemoveAllFallbackTags.TabIndex = 8;
             this.chkRemoveAllFallbackTags.Text = "Remove All Fallback Tags";
             this.chkRemoveAllFallbackTags.UseVisualStyleBackColor = true;
             // 
-            // Form1
+            // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1480, 871);
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(740, 436);
             this.Controls.Add(this.chkRemoveAllFallbackTags);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.listBox1);
@@ -132,9 +127,8 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Word Corrupt Document Checker";
             this.ResumeLayout(false);

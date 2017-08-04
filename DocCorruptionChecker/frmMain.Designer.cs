@@ -64,6 +64,7 @@
             // 
             // btnBrowse
             // 
+            this.btnBrowse.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnBrowse.Location = new System.Drawing.Point(594, 4);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(44, 22);
@@ -74,6 +75,7 @@
             // 
             // btnScanDocument
             // 
+            this.btnScanDocument.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnScanDocument.Location = new System.Drawing.Point(644, 4);
             this.btnScanDocument.Name = "btnScanDocument";
             this.btnScanDocument.Size = new System.Drawing.Size(86, 22);
@@ -93,6 +95,7 @@
             // 
             // btnCopy
             // 
+            this.btnCopy.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnCopy.Location = new System.Drawing.Point(618, 403);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(110, 25);

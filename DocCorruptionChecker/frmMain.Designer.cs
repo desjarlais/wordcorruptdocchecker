@@ -33,7 +33,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tbxFileName = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
-            this.btnScanDocument = new System.Windows.Forms.Button();
+            this.btnFixDocument = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.btnCopy = new System.Windows.Forms.Button();
             this.chkRemoveAllFallbackTags = new System.Windows.Forms.CheckBox();
@@ -73,16 +73,16 @@
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
             // 
-            // btnScanDocument
+            // btnFixDocument
             // 
-            this.btnScanDocument.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.btnScanDocument.Location = new System.Drawing.Point(644, 4);
-            this.btnScanDocument.Name = "btnScanDocument";
-            this.btnScanDocument.Size = new System.Drawing.Size(86, 22);
-            this.btnScanDocument.TabIndex = 3;
-            this.btnScanDocument.Text = "Fix Document";
-            this.btnScanDocument.UseVisualStyleBackColor = true;
-            this.btnScanDocument.Click += new System.EventHandler(this.btnScanDocument_Click);
+            this.btnFixDocument.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnFixDocument.Location = new System.Drawing.Point(644, 4);
+            this.btnFixDocument.Name = "btnFixDocument";
+            this.btnFixDocument.Size = new System.Drawing.Size(86, 22);
+            this.btnFixDocument.TabIndex = 3;
+            this.btnFixDocument.Text = "Fix Document";
+            this.btnFixDocument.UseVisualStyleBackColor = true;
+            this.btnFixDocument.Click += new System.EventHandler(this.btnFixDocument_Click);
             // 
             // listBox1
             // 
@@ -124,7 +124,7 @@
             this.Controls.Add(this.chkRemoveAllFallbackTags);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.btnScanDocument);
+            this.Controls.Add(this.btnFixDocument);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.tbxFileName);
             this.Controls.Add(this.label1);
@@ -145,7 +145,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.TextBox tbxFileName;
         private System.Windows.Forms.Button btnBrowse;
-        private System.Windows.Forms.Button btnScanDocument;
+        private System.Windows.Forms.Button btnFixDocument;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button btnCopy;
         private System.Windows.Forms.CheckBox chkRemoveAllFallbackTags;

@@ -19,6 +19,7 @@ namespace DocCorruptionChecker
         const string txtFallbackEnd = "</mc:Fallback>";
         public static char prevChar = '<';
         public bool isSelfContainedClosingTag = false;
+        public bool isFileUnauthorized = false;
         public static string fixedFallback = string.Empty;
         public static string strOrigFileName = string.Empty;
         public static string strDestPath = string.Empty;
@@ -38,8 +39,8 @@ namespace DocCorruptionChecker
                 tbxFileName.Text = openFileDialog1.FileName;
             }
         }
-
-        private void btnScanDocument_Click(object sender, EventArgs e)
+        
+        private void btnFixDocument_Click(object sender, EventArgs e)
         {
             try
             {
@@ -48,47 +49,12 @@ namespace DocCorruptionChecker
                 strExtension = Path.GetExtension(strOrigFileName);
                 strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + strExtension;
                 listBox1.Items.Clear();
-
-                if ((File.GetAttributes(strOrigFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                
+                if (strExtension == ".docx")
                 {
-                    listBox1.Items.Add("Document is Read-Only, unable to make changes.");
-                    return;
+                    File.Copy(strOrigFileName, strDestFileName);
                 }
 
-                File.Copy(strOrigFileName, strDestFileName);
-            }
-            // Catch exception if the file was already copied.
-            catch (IOException copyError)
-            {
-                listBox1.Items.Add(copyError.Message);
-                try
-                {
-                    File.Delete(strDestFileName);
-                }
-                catch (DirectoryNotFoundException dnf)
-                {
-                    listBox1.Items.Add("ERROR:" + dnf.Message);
-                    return;
-                }
-                catch (IOException ioe)
-                {
-                    listBox1.Items.Add("ERROR: " + ioe.Message);
-                    return;
-                }
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                listBox1.Items.Add("Invalid file name. " + uae.Message);
-                return;
-            }
-            catch (ArgumentException ae)
-            {
-                listBox1.Items.Add("Invalid path." + ae.Message);
-                return;
-            }
-
-            try
-            {
                 using (Package package = Package.Open(strDestFileName, FileMode.Open, FileAccess.ReadWrite))
                 {
                     foreach (PackagePart part in package.GetParts())
@@ -99,12 +65,8 @@ namespace DocCorruptionChecker
                             try
                             {
                                 xdoc.Load(part.GetStream(FileMode.Open, FileAccess.Read));
-                                listBox1.Items.Add("This document does not contain invalid xml.");
-
-                                // if the file doesn't contain invalid xml, delete the copied file outside the using block
-                                DeleteDestintationFile(strDestFileName);
                             }
-                            catch (XmlException) // check for invalid xml
+                            catch (XmlException) // invalid xml found, try to fix the contents
                             {
                                 MemoryStream ms = new MemoryStream();
                                 var valid = new ValidTags();
@@ -115,162 +77,154 @@ namespace DocCorruptionChecker
                                     string strDocText = string.Empty;
                                     using (TextReader tr = new StreamReader(part.GetStream(FileMode.Open, FileAccess.Read)))
                                     {
-                                        try
-                                        {
-                                            strDocText = tr.ReadToEnd();
+                                        strDocText = tr.ReadToEnd();
 
-                                            foreach (var el in invalid.invalidXmlTags())
+                                        foreach (var el in invalid.invalidXmlTags())
+                                        {
+                                            foreach (Match m in Regex.Matches(strDocText, el))
                                             {
-                                                foreach (Match m in Regex.Matches(strDocText, el))
+                                                switch (m.Value)
                                                 {
-                                                    switch (m.Value)
-                                                    {
-                                                        case ValidTags.strValidMcChoice1:
-                                                            break;
-                                                        case ValidTags.strValidMcChoice2:
-                                                            break;
-                                                        case ValidTags.strValidMcChoice3:
-                                                            break;
-                                                        case InvalidTags.strInvalidVshape:
-                                                            strDocText = strDocText.Replace(m.Value, ValidTags.strValidVshape);
-                                                            listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                            listBox1.Items.Add("Replaced With: " + ValidTags.strValidVshape);
-                                                            break;
-                                                        case InvalidTags.strInvalidOmathWps:
-                                                            strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwps);
-                                                            listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                            listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwps);
-                                                            break;
-                                                        case InvalidTags.strInvalidOmathWpg:
-                                                            strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpg);
-                                                            listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                            listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpg);
-                                                            break;
-                                                        case InvalidTags.strInvalidOmathWpc:
-                                                            strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpc);
-                                                            listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                            listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpc);
-                                                            break;
-                                                        case InvalidTags.strInvalidOmathWpi:
-                                                            strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpi);
-                                                            listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                            listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpi);
-                                                            break;
-                                                        default:
-                                                            // default catch for "strInvalidmcChoiceRegEx" and "strInvalidFallbackRegEx"
-                                                            // since the exact string will never be the same and always has different trailing tags
-                                                            // we need to conditionally check for specific patterns
-                                                            // the first if </mc:Choice> is to catch and replace the invalid mc:Choice tags
-                                                            if (m.Value.Contains("</mc:Choice>"))
+                                                    case ValidTags.strValidMcChoice1:
+                                                        break;
+                                                    case ValidTags.strValidMcChoice2:
+                                                        break;
+                                                    case ValidTags.strValidMcChoice3:
+                                                        break;
+                                                    case InvalidTags.strInvalidVshape:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidVshape);
+                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidVshape);
+                                                        break;
+                                                    case InvalidTags.strInvalidOmathWps:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwps);
+                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwps);
+                                                        break;
+                                                    case InvalidTags.strInvalidOmathWpg:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpg);
+                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpg);
+                                                        break;
+                                                    case InvalidTags.strInvalidOmathWpc:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpc);
+                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpc);
+                                                        break;
+                                                    case InvalidTags.strInvalidOmathWpi:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpi);
+                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpi);
+                                                        break;
+                                                    default:
+                                                        // default catch for "strInvalidmcChoiceRegEx" and "strInvalidFallbackRegEx"
+                                                        // since the exact string will never be the same and always has different trailing tags
+                                                        // we need to conditionally check for specific patterns
+                                                        // the first if </mc:Choice> is to catch and replace the invalid mc:Choice tags
+                                                        if (m.Value.Contains("</mc:Choice>"))
+                                                        {
+                                                            if (m.Value.Contains("<mc:Fallback id="))
                                                             {
-                                                                if (m.Value.Contains("<mc:Fallback id="))
-                                                                {
-                                                                    // secondary check for a fallback that has an attribute.
-                                                                    // we don't allow attributes in a fallback
-                                                                    strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice4);
-                                                                    listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                    listBox1.Items.Add("Replaced With: " + ValidTags.strValidMcChoice4);
-                                                                    break;
-                                                                }
-                                                                else
-                                                                {
-                                                                    // replace mc:choice and hold onto the tag that follows
-                                                                    strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice3 + m.Groups[2].Value);
-                                                                    listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                    listBox1.Items.Add("Replaced With: " + ValidTags.strValidMcChoice3 + m.Groups[2].Value);
-                                                                    break;
-                                                                }
-                                                            }
-                                                            // the second if <w:pict/> is to catch and replace the invalid mc:Fallback tags
-                                                            else if (m.Value.Contains("<w:pict/>"))
-                                                            {
-                                                                if (m.Value.Contains("</mc:Fallback>"))
-                                                                {
-                                                                    // if the match contains the closing fallback we just need to remove the entire fallback
-                                                                    // this will leave the closing AC and Run tags, which should be correct
-                                                                    strDocText = strDocText.Replace(m.Value, "");
-                                                                    listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                    listBox1.Items.Add("Replaced With: " + "Fallback tag deleted.");
-                                                                    break;
-                                                                }
-                                                                else
-                                                                {
-                                                                    // if there is no closing fallback tag, we can replace the match with the omitFallback valid tags
-                                                                    // then we need to also add the trailing tag, since it's always different but needs to stay in the file
-                                                                    strDocText = strDocText.Replace(m.Value, ValidTags.strOmitFallback + m.Groups[2].Value);
-                                                                    listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                    listBox1.Items.Add("Replaced With: " + ValidTags.strOmitFallback + m.Groups[2].Value);
-                                                                    break;
-                                                                }
+                                                                // secondary check for a fallback that has an attribute.
+                                                                // we don't allow attributes in a fallback
+                                                                strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice4);
+                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                                listBox1.Items.Add("Replaced With: " + ValidTags.strValidMcChoice4);
+                                                                break;
                                                             }
                                                             else
                                                             {
-                                                                // leaving this open for future checks
+                                                                // replace mc:choice and hold onto the tag that follows
+                                                                strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice3 + m.Groups[2].Value);
+                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                                listBox1.Items.Add("Replaced With: " + ValidTags.strValidMcChoice3 + m.Groups[2].Value);
                                                                 break;
                                                             }
-                                                    }
+                                                        }
+                                                        // the second if <w:pict/> is to catch and replace the invalid mc:Fallback tags
+                                                        else if (m.Value.Contains("<w:pict/>"))
+                                                        {
+                                                            if (m.Value.Contains("</mc:Fallback>"))
+                                                            {
+                                                                // if the match contains the closing fallback we just need to remove the entire fallback
+                                                                // this will leave the closing AC and Run tags, which should be correct
+                                                                strDocText = strDocText.Replace(m.Value, "");
+                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                                listBox1.Items.Add("Replaced With: " + "Fallback tag deleted.");
+                                                                break;
+                                                            }
+                                                            else
+                                                            {
+                                                                // if there is no closing fallback tag, we can replace the match with the omitFallback valid tags
+                                                                // then we need to also add the trailing tag, since it's always different but needs to stay in the file
+                                                                strDocText = strDocText.Replace(m.Value, ValidTags.strOmitFallback + m.Groups[2].Value);
+                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
+                                                                listBox1.Items.Add("Replaced With: " + ValidTags.strOmitFallback + m.Groups[2].Value);
+                                                                break;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            // leaving this open for future checks
+                                                            break;
+                                                        }
                                                 }
                                             }
+                                        }
 
-                                            // remove all fallback tags
-                                            // start by getting a list of all nodes/values
-                                            if (chkRemoveAllFallbackTags.Checked == true)
+                                        // remove all fallback tags
+                                        // start by getting a list of all nodes/values
+                                        if (chkRemoveAllFallbackTags.Checked == true)
+                                        {
+                                            CharEnumerator charEnum = strDocText.GetEnumerator();
+                                            while (charEnum.MoveNext())
                                             {
-                                                CharEnumerator charEnum = strDocText.GetEnumerator();
-                                                while (charEnum.MoveNext())
-                                                {
-                                                    // keep track of previous char
-                                                    prevChar = charEnum.Current;
+                                                // keep track of previous char
+                                                prevChar = charEnum.Current;
 
-                                                    // opening tag
-                                                    if (charEnum.Current == '<')
+                                                // opening tag
+                                                if (charEnum.Current == '<')
+                                                {
+                                                    // if we haven't hit a close, but hit another '<' char
+                                                    // we are not a true open tag so add it like a regular char
+                                                    if (sbNodeBuffer.Length > 0)
                                                     {
-                                                        // if we haven't hit a close, but hit another '<' char
-                                                        // we are not a true open tag so add it like a regular char
-                                                        if (sbNodeBuffer.Length > 0)
-                                                        {
-                                                            nodes.Add(sbNodeBuffer.ToString());
-                                                            sbNodeBuffer.Clear();
-                                                        }
-                                                        Node(charEnum.Current);
-                                                    }
-                                                    // close tag
-                                                    else if (charEnum.Current == '>')
-                                                    {
-                                                        // there are 2 ways to close out a tag
-                                                        // 1. self contained tag like <w:sz w:val="28"/>
-                                                        // 2. standard xml <w:t>test</w:t>
-                                                        // if previous char is '/', then we are an end tag
-                                                        if (prevChar == '/' || isSelfContainedClosingTag == true)
-                                                        {
-                                                            Node(charEnum.Current);
-                                                            isSelfContainedClosingTag = false;
-                                                        }
-                                                        Node(charEnum.Current);
                                                         nodes.Add(sbNodeBuffer.ToString());
                                                         sbNodeBuffer.Clear();
                                                     }
-                                                    // node text
-                                                    else
-                                                    {
-                                                        // this is the second xml closing style, keep track of char
-                                                        if (prevChar == '<' && charEnum.Current == '/')
-                                                        {
-                                                            isSelfContainedClosingTag = true;
-                                                        }
-                                                        Node(charEnum.Current);
-                                                    }
+                                                    Node(charEnum.Current);
                                                 }
-
-                                                listBox1.Items.Add("...removing all fallback tags");
-                                                GetAllNodes(strDocText);
-                                                strDocText = fixedFallback;
+                                                // close tag
+                                                else if (charEnum.Current == '>')
+                                                {
+                                                    // there are 2 ways to close out a tag
+                                                    // 1. self contained tag like <w:sz w:val="28"/>
+                                                    // 2. standard xml <w:t>test</w:t>
+                                                    // if previous char is '/', then we are an end tag
+                                                    if (prevChar == '/' || isSelfContainedClosingTag == true)
+                                                    {
+                                                        Node(charEnum.Current);
+                                                        isSelfContainedClosingTag = false;
+                                                    }
+                                                    Node(charEnum.Current);
+                                                    nodes.Add(sbNodeBuffer.ToString());
+                                                    sbNodeBuffer.Clear();
+                                                }
+                                                // node text
+                                                else
+                                                {
+                                                    // this is the second xml closing style, keep track of char
+                                                    if (prevChar == '<' && charEnum.Current == '/')
+                                                    {
+                                                        isSelfContainedClosingTag = true;
+                                                    }
+                                                    Node(charEnum.Current);
+                                                }
                                             }
-                                        }
-                                        catch (FileFormatException ffe)
-                                        {
-                                            listBox1.Items.Add("ERROR: " + ffe.Message);
-                                            DeleteDestintationFile(strDestFileName);
+
+                                            listBox1.Items.Add("...removing all fallback tags");
+                                            GetAllNodes(strDocText);
+                                            strDocText = fixedFallback;
                                         }
 
                                         tw.Write(strDocText);
@@ -289,33 +243,43 @@ namespace DocCorruptionChecker
                             }
                         }
                     }
+                    listBox1.Items.Add("This document does not contain invalid xml.");
                 }
             }
-            catch (IOException ioe)
+            catch (IOException)
             {
-                listBox1.Items.Add("ERROR: " + ioe.Message);
-                DeleteDestintationFile(strDestFileName);
+                listBox1.Items.Add("ERROR: Unable to fix document." );
             }
             catch (FileFormatException ffe)
             {
                 listBox1.Items.Add("ERROR: File may be password protected OR " + ffe.Message);
-                DeleteDestintationFile(strDestFileName);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                listBox1.Items.Add("ERROR: File is Read-Only.");
+
+                // if file is read-only File.Exists method will throw exception
+                // set global for finally below
+                isFileUnauthorized = true;
             }
             catch (Exception ex)
             {
                 listBox1.Items.Add("ERROR: " + ex.Message);
-                DeleteDestintationFile(strDestFileName);
             }
-        }
-
-        public void DeleteDestintationFile(string path)
-        {
-            if (File.Exists(path))
+            finally
             {
-                File.Delete(path);
+                // if read only, no need to delete the file
+                if (isFileUnauthorized == false)
+                {
+                    // delete the copied file if it exists
+                    if (File.Exists(strDestFileName))
+                    {
+                        File.Delete(strDestFileName);
+                    }
+                }
             }
         }
-
+        
         private void btnCopy_Click(object sender, EventArgs e)
         {
             try

@@ -20,6 +20,7 @@ namespace DocCorruptionChecker
         public static char prevChar = '<';
         public bool isSelfContainedClosingTag = false;
         public bool isFileUnauthorized = false;
+        public bool isFixed = false;
         public static string fixedFallback = string.Empty;
         public static string strOrigFileName = string.Empty;
         public static string strDestPath = string.Empty;
@@ -48,11 +49,27 @@ namespace DocCorruptionChecker
                 strDestPath = Path.GetDirectoryName(strOrigFileName) + "\\";
                 strExtension = Path.GetExtension(strOrigFileName);
                 strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + strExtension;
+
+                // check if file we are about to copy exists and append a number so its unique
+                if (File.Exists(strDestFileName))
+                {
+                    Random rNumber = new Random();
+                    strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + rNumber.Next(1, 100) + strExtension;
+                }
+
                 listBox1.Items.Clear();
                 
                 if (strExtension == ".docx")
                 {
-                    File.Copy(strOrigFileName, strDestFileName);
+                    if ((File.GetAttributes(strOrigFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        listBox1.Items.Add("ERROR: File is Read-Only.");
+                        return;
+                    }
+                    else
+                    {
+                        File.Copy(strOrigFileName, strDestFileName);
+                    }
                 }
 
                 using (Package package = Package.Open(strDestFileName, FileMode.Open, FileAccess.ReadWrite))
@@ -238,12 +255,16 @@ namespace DocCorruptionChecker
 
                                         listBox1.Items.Add("-------------------------------------------------------------");
                                         listBox1.Items.Add("Fixed Document Location: " + strDestFileName);
+                                        isFixed = true;
                                     }
                                 }
                             }
                         }
                     }
-                    listBox1.Items.Add("This document does not contain invalid xml.");
+                    if (isFixed == false)
+                    {
+                        listBox1.Items.Add("This document does not contain invalid xml.");
+                    }
                 }
             }
             catch (IOException)
@@ -254,14 +275,6 @@ namespace DocCorruptionChecker
             {
                 listBox1.Items.Add("ERROR: File may be password protected OR " + ffe.Message);
             }
-            catch (UnauthorizedAccessException)
-            {
-                listBox1.Items.Add("ERROR: File is Read-Only.");
-
-                // if file is read-only File.Exists method will throw exception
-                // set global for finally below
-                isFileUnauthorized = true;
-            }
             catch (Exception ex)
             {
                 listBox1.Items.Add("ERROR: " + ex.Message);
@@ -269,7 +282,7 @@ namespace DocCorruptionChecker
             finally
             {
                 // if read only, no need to delete the file
-                if (isFileUnauthorized == false)
+                if (isFixed == false)
                 {
                     // delete the copied file if it exists
                     if (File.Exists(strDestFileName))

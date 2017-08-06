@@ -19,7 +19,6 @@ namespace DocCorruptionChecker
         const string txtFallbackEnd = "</mc:Fallback>";
         public static char prevChar = '<';
         public bool isSelfContainedClosingTag = false;
-        public bool isFileUnauthorized = false;
         public bool isFixed = false;
         public static string fixedFallback = string.Empty;
         public static string strOrigFileName = string.Empty;
@@ -281,7 +280,8 @@ namespace DocCorruptionChecker
             }
             finally
             {
-                // if read only, no need to delete the file
+                // only delete dest. file when there is an error
+                // need to make sure the file stays when it is fixed
                 if (isFixed == false)
                 {
                     // delete the copied file if it exists

@@ -18,7 +18,7 @@ namespace DocCorruptionChecker
         const string txtFallbackStart = "<mc:Fallback>";
         const string txtFallbackEnd = "</mc:Fallback>";
         public static char prevChar = '<';
-        public bool isSelfContainedClosingTag = false;
+        public bool isRegularXmlTag = false;
         public bool isFixed = false;
         public static string fixedFallback = string.Empty;
         public static string strOrigFileName = string.Empty;
@@ -188,8 +188,8 @@ namespace DocCorruptionChecker
                                             }
                                         }
 
-                                        // remove all fallback tags
-                                        // start by getting a list of all nodes/values
+                                        // remove all fallback tags is a 3 step process
+                                        // Step 1. start by getting a list of all nodes/values in the document.xml file
                                         if (chkRemoveAllFallbackTags.Checked == true)
                                         {
                                             CharEnumerator charEnum = strDocText.GetEnumerator();
@@ -217,10 +217,10 @@ namespace DocCorruptionChecker
                                                     // 1. self contained tag like <w:sz w:val="28"/>
                                                     // 2. standard xml <w:t>test</w:t>
                                                     // if previous char is '/', then we are an end tag
-                                                    if (prevChar == '/' || isSelfContainedClosingTag == true)
+                                                    if (prevChar == '/' || isRegularXmlTag == true)
                                                     {
                                                         Node(charEnum.Current);
-                                                        isSelfContainedClosingTag = false;
+                                                        isRegularXmlTag = false;
                                                     }
                                                     Node(charEnum.Current);
                                                     nodes.Add(sbNodeBuffer.ToString());
@@ -232,7 +232,7 @@ namespace DocCorruptionChecker
                                                     // this is the second xml closing style, keep track of char
                                                     if (prevChar == '<' && charEnum.Current == '/')
                                                     {
-                                                        isSelfContainedClosingTag = true;
+                                                        isRegularXmlTag = true;
                                                     }
                                                     Node(charEnum.Current);
                                                 }
@@ -326,9 +326,14 @@ namespace DocCorruptionChecker
             sbChildNodeBuffer.Append(input);
         }
 
+        /// <summary>
+        /// Step 2 of remove fallback tags
+        /// this function loops through all nodes parsed out from Step 1
+        /// check each node and add fallback tags only to the list
+        /// </summary>
+        /// <param name="originalText"></param>
         public static void GetAllNodes(string originalText)
         {
-            // check each node and add fallback tags only to the list
             bool isFallback = false;
             List<string> fallback = new List<string>();
 
@@ -353,11 +358,16 @@ namespace DocCorruptionChecker
             ParseOutFallbackTags(fallback, originalText);
         }
 
+        /// <summary>
+        /// Step 3 of remove fallback tags
+        /// we should only have a list of fallback start tags, end tags and each tag in between
+        /// the idea is to combine these start/middle/end tags into a long string
+        /// then they can be replaced with an empty string
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="originalText"></param>
         public static void ParseOutFallbackTags(List<string> input, string originalText)
         {
-            // we should only have a list of fallback start tags, end tags and each tag in between
-            // the idea is to combine these start/middle/end tags into a long string
-            // then they can be replaced with an empty string
             List<string> FallbackTagsAppended = new List<string>();
             StringBuilder sbFallback = new StringBuilder();
 

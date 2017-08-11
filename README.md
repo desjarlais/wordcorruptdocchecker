@@ -2,7 +2,7 @@
 
 I created this tool to fix corrupt Word documents (non-binary, just open xml files). Mainly this applies to the .docx format. It basically just checks through a list of corrupt xml tags that I've come across and attempts to fix the tags. It will create a copy of the file you provide and attempt to fix the copy.  The original file should be left unchanged.
 
-![ScreenShot](http://imgur.com/NuHi7rW)
+![ScreenShot](http://i.imgur.com/NuHi7rW.png)
 
 There are still many other types of corrupt documents that I have not seen, so please free to submit questions or feedback in the Discussions section.
 

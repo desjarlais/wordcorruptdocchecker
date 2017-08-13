@@ -133,7 +133,7 @@
             this.MaximizeBox = false;
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Word Corrupt Document Checker";
+            this.Text = "Corrupt Word Document Checker";
             this.ResumeLayout(false);
             this.PerformLayout();
 

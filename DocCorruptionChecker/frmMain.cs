@@ -13,7 +13,6 @@ namespace DocCorruptionChecker
     {
         static List<string> nodes = new List<string>();
         static StringBuilder sbNodeBuffer = new StringBuilder();
-        static StringBuilder sbChildNodeBuffer = new StringBuilder();
 
         const string txtFallbackStart = "<mc:Fallback>";
         const string txtFallbackEnd = "</mc:Fallback>";
@@ -272,11 +271,16 @@ namespace DocCorruptionChecker
             }
             catch (FileFormatException ffe)
             {
-                listBox1.Items.Add("ERROR: File may be password protected OR " + ffe.Message);
+                // list out the possible reasons for this type of exception
+                listBox1.Items.Add("ERROR: Unable to fix document.");
+                listBox1.Items.Add("   Possible Causes:");
+                listBox1.Items.Add("      - File may be password protected");
+                listBox1.Items.Add("      - File was renamed to the .docx extension, but is not an actual .docx file");
+                listBox1.Items.Add("      - " + ffe.Message);
             }
             catch (Exception ex)
             {
-                listBox1.Items.Add("ERROR: " + ex.Message);
+                listBox1.Items.Add("ERROR: Unable to fix document. " + ex.Message);
             }
             finally
             {
@@ -320,12 +324,7 @@ namespace DocCorruptionChecker
         {
             sbNodeBuffer.Append(input);
         }
-
-        public static void TagText(char input)
-        {
-            sbChildNodeBuffer.Append(input);
-        }
-
+        
         /// <summary>
         /// Step 2 of remove fallback tags
         /// this function loops through all nodes parsed out from Step 1

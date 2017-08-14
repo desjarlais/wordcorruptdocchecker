@@ -31,6 +31,11 @@ namespace DocCorruptionChecker
             InitializeComponent();
         }
 
+        /// <summary>
+        /// display the browse file dialog
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog1.ShowDialog();
@@ -40,6 +45,13 @@ namespace DocCorruptionChecker
             }
         }
         
+        /// <summary>
+        /// get a copy of the corrupt file instead of working with the original
+        /// pull out the document.xml file and start searching for known corrupt tag sequences
+        /// if nothing is found, add the brute force style approach of deleting all mc:fallback tags
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnFixDocument_Click(object sender, EventArgs e)
         {
             try
@@ -56,13 +68,13 @@ namespace DocCorruptionChecker
                     strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + rNumber.Next(1, 100) + strExtension;
                 }
 
-                listBox1.Items.Clear();
+                lstOutput.Items.Clear();
                 
                 if (strExtension == ".docx")
                 {
                     if ((File.GetAttributes(strOrigFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                     {
-                        listBox1.Items.Add("ERROR: File is Read-Only.");
+                        lstOutput.Items.Add("ERROR: File is Read-Only.");
                         return;
                     }
                     else
@@ -109,28 +121,28 @@ namespace DocCorruptionChecker
                                                         break;
                                                     case InvalidTags.strInvalidVshape:
                                                         strDocText = strDocText.Replace(m.Value, ValidTags.strValidVshape);
-                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidVshape);
+                                                        lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidVshape);
                                                         break;
                                                     case InvalidTags.strInvalidOmathWps:
                                                         strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwps);
-                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwps);
+                                                        lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwps);
                                                         break;
                                                     case InvalidTags.strInvalidOmathWpg:
                                                         strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpg);
-                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpg);
+                                                        lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwpg);
                                                         break;
                                                     case InvalidTags.strInvalidOmathWpc:
                                                         strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpc);
-                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpc);
+                                                        lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwpc);
                                                         break;
                                                     case InvalidTags.strInvalidOmathWpi:
                                                         strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpi);
-                                                        listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                        listBox1.Items.Add("Replaced With: " + ValidTags.strValidomathwpi);
+                                                        lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwpi);
                                                         break;
                                                     default:
                                                         // default catch for "strInvalidmcChoiceRegEx" and "strInvalidFallbackRegEx"
@@ -144,16 +156,16 @@ namespace DocCorruptionChecker
                                                                 // secondary check for a fallback that has an attribute.
                                                                 // we don't allow attributes in a fallback
                                                                 strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice4);
-                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                listBox1.Items.Add("Replaced With: " + ValidTags.strValidMcChoice4);
+                                                                lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.strValidMcChoice4);
                                                                 break;
                                                             }
                                                             else
                                                             {
                                                                 // replace mc:choice and hold onto the tag that follows
                                                                 strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice3 + m.Groups[2].Value);
-                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                listBox1.Items.Add("Replaced With: " + ValidTags.strValidMcChoice3 + m.Groups[2].Value);
+                                                                lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.strValidMcChoice3 + m.Groups[2].Value);
                                                                 break;
                                                             }
                                                         }
@@ -165,8 +177,8 @@ namespace DocCorruptionChecker
                                                                 // if the match contains the closing fallback we just need to remove the entire fallback
                                                                 // this will leave the closing AC and Run tags, which should be correct
                                                                 strDocText = strDocText.Replace(m.Value, "");
-                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                listBox1.Items.Add("Replaced With: " + "Fallback tag deleted.");
+                                                                lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                                lstOutput.Items.Add("Replaced With: " + "Fallback tag deleted.");
                                                                 break;
                                                             }
                                                             else
@@ -174,8 +186,8 @@ namespace DocCorruptionChecker
                                                                 // if there is no closing fallback tag, we can replace the match with the omitFallback valid tags
                                                                 // then we need to also add the trailing tag, since it's always different but needs to stay in the file
                                                                 strDocText = strDocText.Replace(m.Value, ValidTags.strOmitFallback + m.Groups[2].Value);
-                                                                listBox1.Items.Add("Invalid Tag: " + m.Value);
-                                                                listBox1.Items.Add("Replaced With: " + ValidTags.strOmitFallback + m.Groups[2].Value);
+                                                                lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.strOmitFallback + m.Groups[2].Value);
                                                                 break;
                                                             }
                                                         }
@@ -238,7 +250,7 @@ namespace DocCorruptionChecker
                                                 }
                                             }
 
-                                            listBox1.Items.Add("...removing all fallback tags");
+                                            lstOutput.Items.Add("...removing all fallback tags");
                                             GetAllNodes(strDocText);
                                             strDocText = fixedFallback;
                                         }
@@ -252,8 +264,8 @@ namespace DocCorruptionChecker
                                         partStream.SetLength(0);
                                         ms.WriteTo(partStream);
 
-                                        listBox1.Items.Add("-------------------------------------------------------------");
-                                        listBox1.Items.Add("Fixed Document Location: " + strDestFileName);
+                                        lstOutput.Items.Add("-------------------------------------------------------------");
+                                        lstOutput.Items.Add("Fixed Document Location: " + strDestFileName);
                                         isFixed = true;
                                     }
                                 }
@@ -262,26 +274,26 @@ namespace DocCorruptionChecker
                     }
                     if (isFixed == false)
                     {
-                        listBox1.Items.Add("This document does not contain invalid xml.");
+                        lstOutput.Items.Add("This document does not contain invalid xml.");
                     }
                 }
             }
             catch (IOException)
             {
-                listBox1.Items.Add("ERROR: Unable to fix document." );
+                lstOutput.Items.Add("ERROR: Unable to fix document." );
             }
             catch (FileFormatException ffe)
             {
                 // list out the possible reasons for this type of exception
-                listBox1.Items.Add("ERROR: Unable to fix document.");
-                listBox1.Items.Add("   Possible Causes:");
-                listBox1.Items.Add("      - File may be password protected");
-                listBox1.Items.Add("      - File was renamed to the .docx extension, but is not an actual .docx file");
-                listBox1.Items.Add("      - " + ffe.Message);
+                lstOutput.Items.Add("ERROR: Unable to fix document.");
+                lstOutput.Items.Add("   Possible Causes:");
+                lstOutput.Items.Add("      - File may be password protected");
+                lstOutput.Items.Add("      - File was renamed to the .docx extension, but is not an actual .docx file");
+                lstOutput.Items.Add("      - " + ffe.Message);
             }
             catch (Exception ex)
             {
-                listBox1.Items.Add("ERROR: Unable to fix document. " + ex.Message);
+                lstOutput.Items.Add("ERROR: Unable to fix document. " + ex.Message);
             }
             finally
             {
@@ -299,7 +311,7 @@ namespace DocCorruptionChecker
                 {
                     // since we were able to attempt the fixes
                     // check if we can open in the sdk and confirm it was indeed fixed
-                    listBox1.Items.Add("");
+                    lstOutput.Items.Add("");
                     OpenWithSDK(strDestFileName);
                 }
 
@@ -315,17 +327,22 @@ namespace DocCorruptionChecker
             }
         }
         
+        /// <summary>
+        /// copy everything in the listbox and add to clipboard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCopy_Click(object sender, EventArgs e)
         {
             try
             {
-                if (listBox1.Items.Count > 0)
+                if (lstOutput.Items.Count > 0)
                 {
                     StringBuilder buffer = new StringBuilder();
 
-                    for (int i = 0; i < listBox1.Items.Count; i++)
+                    for (int i = 0; i < lstOutput.Items.Count; i++)
                     {
-                        buffer.Append(listBox1.Items[i].ToString());
+                        buffer.Append(lstOutput.Items[i].ToString());
                         buffer.Append('\n');
                     }
 
@@ -338,6 +355,7 @@ namespace DocCorruptionChecker
             }
         }
 
+        // add current character to the node buffer
         public static void Node(char input)
         {
             sbNodeBuffer.Append(input);
@@ -434,21 +452,21 @@ namespace DocCorruptionChecker
             {
                 using (WordprocessingDocument document = WordprocessingDocument.Open(file, true))
                 {
-                    // need to try pulling the main document.xml part from the zip file
+                    // need to try pulling the document.xml part from the zip file
                     // this will confirm if the file is still corrupt
-                    // if not, the exception catches and we can notify the user
+                    // if it is, the exception catches and we can notify the user
                     MainDocumentPart main = document.MainDocumentPart;
                     string body = main.Document.Body.ToString();
 
                     // file opened so the file is successfully fixed.
-                    listBox1.Items.Add("Secondary check succeeded, the file is fixed correctly.");
+                    lstOutput.Items.Add("Secondary check succeeded, the file is fixed correctly.");
                 }
             }
             catch (Exception)
             {
                 // if the file failed to open, it still contains errors
-                listBox1.Items.Add("Secondary check failed, not all corrupt tags were fixed.");
-                listBox1.Items.Add("Try using the Remove Fallback option.");
+                lstOutput.Items.Add("Secondary check failed, not all corrupt tags were fixed.");
+                lstOutput.Items.Add("Try using the Remove Fallback option.");
             }
         }
     }

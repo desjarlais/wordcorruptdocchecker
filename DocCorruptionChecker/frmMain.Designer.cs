@@ -34,7 +34,7 @@
             this.tbxFileName = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.btnFixDocument = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.lstOutput = new System.Windows.Forms.ListBox();
             this.btnCopy = new System.Windows.Forms.Button();
             this.chkRemoveAllFallbackTags = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
@@ -84,14 +84,14 @@
             this.btnFixDocument.UseVisualStyleBackColor = true;
             this.btnFixDocument.Click += new System.EventHandler(this.btnFixDocument_Click);
             // 
-            // listBox1
+            // lstOutput
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.Location = new System.Drawing.Point(15, 31);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(715, 355);
-            this.listBox1.TabIndex = 4;
+            this.lstOutput.FormattingEnabled = true;
+            this.lstOutput.HorizontalScrollbar = true;
+            this.lstOutput.Location = new System.Drawing.Point(15, 31);
+            this.lstOutput.Name = "lstOutput";
+            this.lstOutput.Size = new System.Drawing.Size(715, 355);
+            this.lstOutput.TabIndex = 4;
             // 
             // btnCopy
             // 
@@ -123,7 +123,7 @@
             this.ClientSize = new System.Drawing.Size(740, 436);
             this.Controls.Add(this.chkRemoveAllFallbackTags);
             this.Controls.Add(this.btnCopy);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.lstOutput);
             this.Controls.Add(this.btnFixDocument);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.tbxFileName);
@@ -146,7 +146,7 @@
         private System.Windows.Forms.TextBox tbxFileName;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Button btnFixDocument;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox lstOutput;
         private System.Windows.Forms.Button btnCopy;
         private System.Windows.Forms.CheckBox chkRemoveAllFallbackTags;
     }

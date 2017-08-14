@@ -438,7 +438,8 @@ namespace DocCorruptionChecker
                     // this will confirm if the file is still corrupt
                     // if not, the exception catches and we can notify the user
                     MainDocumentPart main = document.MainDocumentPart;
-                    
+                    string body = main.Document.Body.ToString();
+
                     // file opened so the file is successfully fixed.
                     listBox1.Items.Add("Secondary check succeeded, the file is fixed correctly.");
                 }

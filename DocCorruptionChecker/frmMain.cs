@@ -434,6 +434,11 @@ namespace DocCorruptionChecker
             {
                 using (WordprocessingDocument document = WordprocessingDocument.Open(file, true))
                 {
+                    // need to try pulling the main document.xml part from the zip file
+                    // this will confirm if the file is still corrupt
+                    // if not, the exception catches and we can notify the user
+                    MainDocumentPart main = document.MainDocumentPart;
+                    
                     // file opened so the file is successfully fixed.
                     listBox1.Items.Add("Secondary check succeeded, the file is fixed correctly.");
                 }

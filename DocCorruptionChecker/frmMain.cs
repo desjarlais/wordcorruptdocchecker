@@ -6,6 +6,7 @@ using System.IO.Packaging;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace DocCorruptionChecker
 {
@@ -284,7 +285,7 @@ namespace DocCorruptionChecker
             }
             finally
             {
-                // only delete dest. file when there is an error
+                // only delete destination file when there is an error
                 // need to make sure the file stays when it is fixed
                 if (isFixed == false)
                 {
@@ -294,6 +295,23 @@ namespace DocCorruptionChecker
                         File.Delete(strDestFileName);
                     }
                 }
+                else
+                {
+                    // since we were able to attempt the fixes
+                    // check if we can open in the sdk and confirm it was indeed fixed
+                    listBox1.Items.Add("");
+                    OpenWithSDK(strDestFileName);
+                }
+
+                // need to reset the globals 
+                isFixed = false;
+                isRegularXmlTag = false;
+                fixedFallback = string.Empty;
+                strOrigFileName = string.Empty;
+                strDestPath = string.Empty;
+                strExtension = string.Empty;
+                strDestFileName = string.Empty;
+                prevChar = '<';
             }
         }
         
@@ -402,6 +420,30 @@ namespace DocCorruptionChecker
             // each set of fallback tags should now be removed from the text
             // set it to the global variable so we can add it back into document.xml
             fixedFallback = originalText;
+        }
+
+        /// <summary>
+        /// function to open the fixed file in the SDK
+        /// if the SDK fails to open the file, it still contains corruption
+        /// warn the user to try remove all fallback tags
+        /// </summary>
+        /// <param name="file">the path to the initial fix attempt</param>
+        public void OpenWithSDK(string file)
+        {
+            try
+            {
+                using (WordprocessingDocument document = WordprocessingDocument.Open(file, true))
+                {
+                    // file opened so the file is successfully fixed.
+                    listBox1.Items.Add("Secondary check succeeded, the file is fixed correctly.");
+                }
+            }
+            catch (Exception)
+            {
+                // if the file failed to open, it still contains errors
+                listBox1.Items.Add("Secondary check failed, not all corrupt tags were fixed.");
+                listBox1.Items.Add("Try using the Remove Fallback option.");
+            }
         }
     }
 }

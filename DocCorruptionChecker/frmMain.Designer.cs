@@ -1,6 +1,6 @@
 ﻿namespace DocCorruptionChecker
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.label1 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tbxFileName = new System.Windows.Forms.TextBox();
@@ -71,7 +71,7 @@
             this.btnBrowse.TabIndex = 2;
             this.btnBrowse.Text = "...";
             this.btnBrowse.UseVisualStyleBackColor = true;
-            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+            this.btnBrowse.Click += new System.EventHandler(this.BtnBrowse_Click);
             // 
             // btnFixDocument
             // 
@@ -82,7 +82,7 @@
             this.btnFixDocument.TabIndex = 3;
             this.btnFixDocument.Text = "Fix Document";
             this.btnFixDocument.UseVisualStyleBackColor = true;
-            this.btnFixDocument.Click += new System.EventHandler(this.btnFixDocument_Click);
+            this.btnFixDocument.Click += new System.EventHandler(this.BtnFixDocument_Click);
             // 
             // lstOutput
             // 
@@ -102,7 +102,7 @@
             this.btnCopy.TabIndex = 7;
             this.btnCopy.Text = "Copy Error Details";
             this.btnCopy.UseVisualStyleBackColor = true;
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            this.btnCopy.Click += new System.EventHandler(this.BtnCopy_Click);
             // 
             // chkRemoveAllFallbackTags
             // 

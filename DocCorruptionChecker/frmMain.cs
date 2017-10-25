@@ -6,27 +6,28 @@ using System.IO.Packaging;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace DocCorruptionChecker
 {
-    public partial class frmMain : Form
+    public partial class FrmMain : Form
     {
-        static List<string> nodes = new List<string>();
-        static StringBuilder sbNodeBuffer = new StringBuilder();
+        static List<string> _nodes = new List<string>();
+        static StringBuilder _sbNodeBuffer = new StringBuilder();
 
-        const string txtFallbackStart = "<mc:Fallback>";
-        const string txtFallbackEnd = "</mc:Fallback>";
-        public static char prevChar = '<';
-        public bool isRegularXmlTag = false;
-        public bool isFixed = false;
-        public static string fixedFallback = string.Empty;
-        public static string strOrigFileName = string.Empty;
-        public static string strDestPath = string.Empty;
-        public static string strExtension = string.Empty;
-        public static string strDestFileName = string.Empty;
+        private const string TxtFallbackStart = "<mc:Fallback>";
+        private const string TxtFallbackEnd = "</mc:Fallback>";
+        public static char PrevChar = '<';
+        public bool IsRegularXmlTag;
+        public bool IsFixed;
+        public static string FixedFallback = string.Empty;
+        public static string StrOrigFileName = string.Empty;
+        public static string StrDestPath = string.Empty;
+        public static string StrExtension = string.Empty;
+        public static string StrDestFileName = string.Empty;
 
-        public frmMain()
+        public FrmMain()
         {
             InitializeComponent();
         }
@@ -36,7 +37,7 @@ namespace DocCorruptionChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnBrowse_Click(object sender, EventArgs e)
+        private void BtnBrowse_Click(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog1.ShowDialog();
             if (result == DialogResult.OK)
@@ -52,38 +53,38 @@ namespace DocCorruptionChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnFixDocument_Click(object sender, EventArgs e)
+        private void BtnFixDocument_Click(object sender, EventArgs e)
         {
             try
             {
-                strOrigFileName = tbxFileName.Text;
-                strDestPath = Path.GetDirectoryName(strOrigFileName) + "\\";
-                strExtension = Path.GetExtension(strOrigFileName);
-                strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + strExtension;
+                StrOrigFileName = tbxFileName.Text;
+                StrDestPath = Path.GetDirectoryName(StrOrigFileName) + "\\";
+                StrExtension = Path.GetExtension(StrOrigFileName);
+                StrDestFileName = StrDestPath + Path.GetFileNameWithoutExtension(StrOrigFileName) + "(Fixed)" + StrExtension;
 
                 // check if file we are about to copy exists and append a number so its unique
-                if (File.Exists(strDestFileName))
+                if (File.Exists(StrDestFileName))
                 {
                     Random rNumber = new Random();
-                    strDestFileName = strDestPath + Path.GetFileNameWithoutExtension(strOrigFileName) + "(Fixed)" + rNumber.Next(1, 100) + strExtension;
+                    StrDestFileName = StrDestPath + Path.GetFileNameWithoutExtension(StrOrigFileName) + "(Fixed)" + rNumber.Next(1, 100) + StrExtension;
                 }
 
                 lstOutput.Items.Clear();
                 
-                if (strExtension == ".docx")
+                if (StrExtension == ".docx")
                 {
-                    if ((File.GetAttributes(strOrigFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    if ((File.GetAttributes(StrOrigFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                     {
                         lstOutput.Items.Add("ERROR: File is Read-Only.");
                         return;
                     }
                     else
                     {
-                        File.Copy(strOrigFileName, strDestFileName);
+                        File.Copy(StrOrigFileName, StrDestFileName);
                     }
                 }
 
-                using (Package package = Package.Open(strDestFileName, FileMode.Open, FileAccess.ReadWrite))
+                using (Package package = Package.Open(StrDestFileName, FileMode.Open, FileAccess.ReadWrite))
                 {
                     foreach (PackagePart part in package.GetParts())
                     {
@@ -97,52 +98,50 @@ namespace DocCorruptionChecker
                             catch (XmlException) // invalid xml found, try to fix the contents
                             {
                                 MemoryStream ms = new MemoryStream();
-                                var valid = new ValidTags();
                                 var invalid = new InvalidTags();
 
                                 using (TextWriter tw = new StreamWriter(ms))
                                 {
-                                    string strDocText = string.Empty;
                                     using (TextReader tr = new StreamReader(part.GetStream(FileMode.Open, FileAccess.Read)))
                                     {
-                                        strDocText = tr.ReadToEnd();
+                                        string strDocText = tr.ReadToEnd();
 
-                                        foreach (var el in invalid.invalidXmlTags())
+                                        foreach (var el in invalid.InvalidXmlTags())
                                         {
                                             foreach (Match m in Regex.Matches(strDocText, el))
                                             {
                                                 switch (m.Value)
                                                 {
-                                                    case ValidTags.strValidMcChoice1:
+                                                    case ValidTags.StrValidMcChoice1:
                                                         break;
-                                                    case ValidTags.strValidMcChoice2:
+                                                    case ValidTags.StrValidMcChoice2:
                                                         break;
-                                                    case ValidTags.strValidMcChoice3:
+                                                    case ValidTags.StrValidMcChoice3:
                                                         break;
-                                                    case InvalidTags.strInvalidVshape:
-                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidVshape);
+                                                    case InvalidTags.StrInvalidVshape:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.StrValidVshape);
                                                         lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidVshape);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidVshape);
                                                         break;
-                                                    case InvalidTags.strInvalidOmathWps:
-                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwps);
+                                                    case InvalidTags.StrInvalidOmathWps:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.StrValidomathwps);
                                                         lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwps);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidomathwps);
                                                         break;
-                                                    case InvalidTags.strInvalidOmathWpg:
-                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpg);
+                                                    case InvalidTags.StrInvalidOmathWpg:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.StrValidomathwpg);
                                                         lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwpg);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidomathwpg);
                                                         break;
-                                                    case InvalidTags.strInvalidOmathWpc:
-                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpc);
+                                                    case InvalidTags.StrInvalidOmathWpc:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.StrValidomathwpc);
                                                         lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwpc);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidomathwpc);
                                                         break;
-                                                    case InvalidTags.strInvalidOmathWpi:
-                                                        strDocText = strDocText.Replace(m.Value, ValidTags.strValidomathwpi);
+                                                    case InvalidTags.StrInvalidOmathWpi:
+                                                        strDocText = strDocText.Replace(m.Value, ValidTags.StrValidomathwpi);
                                                         lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.strValidomathwpi);
+                                                        lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidomathwpi);
                                                         break;
                                                     default:
                                                         // default catch for "strInvalidmcChoiceRegEx" and "strInvalidFallbackRegEx"
@@ -155,19 +154,17 @@ namespace DocCorruptionChecker
                                                             {
                                                                 // secondary check for a fallback that has an attribute.
                                                                 // we don't allow attributes in a fallback
-                                                                strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice4);
+                                                                strDocText = strDocText.Replace(m.Value, ValidTags.StrValidMcChoice4);
                                                                 lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.strValidMcChoice4);
+                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidMcChoice4);
                                                                 break;
                                                             }
-                                                            else
-                                                            {
-                                                                // replace mc:choice and hold onto the tag that follows
-                                                                strDocText = strDocText.Replace(m.Value, ValidTags.strValidMcChoice3 + m.Groups[2].Value);
-                                                                lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.strValidMcChoice3 + m.Groups[2].Value);
-                                                                break;
-                                                            }
+                                                            
+                                                            // replace mc:choice and hold onto the tag that follows
+                                                            strDocText = strDocText.Replace(m.Value, ValidTags.StrValidMcChoice3 + m.Groups[2].Value);
+                                                            lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                            lstOutput.Items.Add("Replaced With: " + ValidTags.StrValidMcChoice3 + m.Groups[2].Value);
+                                                            break;
                                                         }
                                                         // the second if <w:pict/> is to catch and replace the invalid mc:Fallback tags
                                                         else if (m.Value.Contains("<w:pict/>"))
@@ -181,15 +178,13 @@ namespace DocCorruptionChecker
                                                                 lstOutput.Items.Add("Replaced With: " + "Fallback tag deleted.");
                                                                 break;
                                                             }
-                                                            else
-                                                            {
-                                                                // if there is no closing fallback tag, we can replace the match with the omitFallback valid tags
-                                                                // then we need to also add the trailing tag, since it's always different but needs to stay in the file
-                                                                strDocText = strDocText.Replace(m.Value, ValidTags.strOmitFallback + m.Groups[2].Value);
-                                                                lstOutput.Items.Add("Invalid Tag: " + m.Value);
-                                                                lstOutput.Items.Add("Replaced With: " + ValidTags.strOmitFallback + m.Groups[2].Value);
-                                                                break;
-                                                            }
+                                                            
+                                                            // if there is no closing fallback tag, we can replace the match with the omitFallback valid tags
+                                                            // then we need to also add the trailing tag, since it's always different but needs to stay in the file
+                                                            strDocText = strDocText.Replace(m.Value, ValidTags.StrOmitFallback + m.Groups[2].Value);
+                                                            lstOutput.Items.Add("Invalid Tag: " + m.Value);
+                                                            lstOutput.Items.Add("Replaced With: " + ValidTags.StrOmitFallback + m.Groups[2].Value);
+                                                            break;
                                                         }
                                                         else
                                                         {
@@ -202,57 +197,55 @@ namespace DocCorruptionChecker
 
                                         // remove all fallback tags is a 3 step process
                                         // Step 1. start by getting a list of all nodes/values in the document.xml file
-                                        if (chkRemoveAllFallbackTags.Checked == true)
+                                        if (chkRemoveAllFallbackTags.Checked)
                                         {
                                             CharEnumerator charEnum = strDocText.GetEnumerator();
                                             while (charEnum.MoveNext())
                                             {
                                                 // keep track of previous char
-                                                prevChar = charEnum.Current;
+                                                PrevChar = charEnum.Current;
 
                                                 // opening tag
-                                                if (charEnum.Current == '<')
+                                                switch (charEnum.Current)
                                                 {
-                                                    // if we haven't hit a close, but hit another '<' char
-                                                    // we are not a true open tag so add it like a regular char
-                                                    if (sbNodeBuffer.Length > 0)
-                                                    {
-                                                        nodes.Add(sbNodeBuffer.ToString());
-                                                        sbNodeBuffer.Clear();
-                                                    }
-                                                    Node(charEnum.Current);
-                                                }
-                                                // close tag
-                                                else if (charEnum.Current == '>')
-                                                {
-                                                    // there are 2 ways to close out a tag
-                                                    // 1. self contained tag like <w:sz w:val="28"/>
-                                                    // 2. standard xml <w:t>test</w:t>
-                                                    // if previous char is '/', then we are an end tag
-                                                    if (prevChar == '/' || isRegularXmlTag == true)
-                                                    {
+                                                    case '<':
+                                                        // if we haven't hit a close, but hit another '<' char
+                                                        // we are not a true open tag so add it like a regular char
+                                                        if (_sbNodeBuffer.Length > 0)
+                                                        {
+                                                            _nodes.Add(_sbNodeBuffer.ToString());
+                                                            _sbNodeBuffer.Clear();
+                                                        }
                                                         Node(charEnum.Current);
-                                                        isRegularXmlTag = false;
-                                                    }
-                                                    Node(charEnum.Current);
-                                                    nodes.Add(sbNodeBuffer.ToString());
-                                                    sbNodeBuffer.Clear();
-                                                }
-                                                // node text
-                                                else
-                                                {
-                                                    // this is the second xml closing style, keep track of char
-                                                    if (prevChar == '<' && charEnum.Current == '/')
-                                                    {
-                                                        isRegularXmlTag = true;
-                                                    }
-                                                    Node(charEnum.Current);
+                                                        break;
+                                                    case '>':
+                                                        // there are 2 ways to close out a tag
+                                                        // 1. self contained tag like <w:sz w:val="28"/>
+                                                        // 2. standard xml <w:t>test</w:t>
+                                                        // if previous char is '/', then we are an end tag
+                                                        if (PrevChar == '/' || IsRegularXmlTag)
+                                                        {
+                                                            Node(charEnum.Current);
+                                                            IsRegularXmlTag = false;
+                                                        }
+                                                        Node(charEnum.Current);
+                                                        _nodes.Add(_sbNodeBuffer.ToString());
+                                                        _sbNodeBuffer.Clear();
+                                                        break;
+                                                    default:
+                                                        // this is the second xml closing style, keep track of char
+                                                        if (PrevChar == '<' && charEnum.Current == '/')
+                                                        {
+                                                            IsRegularXmlTag = true;
+                                                        }
+                                                        Node(charEnum.Current);
+                                                        break;
                                                 }
                                             }
 
                                             lstOutput.Items.Add("...removing all fallback tags");
                                             GetAllNodes(strDocText);
-                                            strDocText = fixedFallback;
+                                            strDocText = FixedFallback;
                                         }
 
                                         tw.Write(strDocText);
@@ -265,14 +258,14 @@ namespace DocCorruptionChecker
                                         ms.WriteTo(partStream);
 
                                         lstOutput.Items.Add("-------------------------------------------------------------");
-                                        lstOutput.Items.Add("Fixed Document Location: " + strDestFileName);
-                                        isFixed = true;
+                                        lstOutput.Items.Add("Fixed Document Location: " + StrDestFileName);
+                                        IsFixed = true;
                                     }
                                 }
                             }
                         }
                     }
-                    if (isFixed == false)
+                    if (IsFixed == false)
                     {
                         lstOutput.Items.Add("This document does not contain invalid xml.");
                     }
@@ -299,12 +292,12 @@ namespace DocCorruptionChecker
             {
                 // only delete destination file when there is an error
                 // need to make sure the file stays when it is fixed
-                if (isFixed == false)
+                if (IsFixed == false)
                 {
                     // delete the copied file if it exists
-                    if (File.Exists(strDestFileName))
+                    if (File.Exists(StrDestFileName))
                     {
-                        File.Delete(strDestFileName);
+                        File.Delete(StrDestFileName);
                     }
                 }
                 else
@@ -312,18 +305,18 @@ namespace DocCorruptionChecker
                     // since we were able to attempt the fixes
                     // check if we can open in the sdk and confirm it was indeed fixed
                     lstOutput.Items.Add("");
-                    OpenWithSDK(strDestFileName);
+                    OpenWithSdk(StrDestFileName);
                 }
 
                 // need to reset the globals 
-                isFixed = false;
-                isRegularXmlTag = false;
-                fixedFallback = string.Empty;
-                strOrigFileName = string.Empty;
-                strDestPath = string.Empty;
-                strExtension = string.Empty;
-                strDestFileName = string.Empty;
-                prevChar = '<';
+                IsFixed = false;
+                IsRegularXmlTag = false;
+                FixedFallback = string.Empty;
+                StrOrigFileName = string.Empty;
+                StrDestPath = string.Empty;
+                StrExtension = string.Empty;
+                StrDestFileName = string.Empty;
+                PrevChar = '<';
             }
         }
         
@@ -332,22 +325,21 @@ namespace DocCorruptionChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnCopy_Click(object sender, EventArgs e)
+        private void BtnCopy_Click(object sender, EventArgs e)
         {
             try
             {
-                if (lstOutput.Items.Count > 0)
+                if (lstOutput.Items.Count <= 0) return;
+
+                StringBuilder buffer = new StringBuilder();
+
+                foreach (object t in lstOutput.Items)
                 {
-                    StringBuilder buffer = new StringBuilder();
-
-                    for (int i = 0; i < lstOutput.Items.Count; i++)
-                    {
-                        buffer.Append(lstOutput.Items[i].ToString());
-                        buffer.Append('\n');
-                    }
-
-                    Clipboard.SetText(buffer.ToString());
+                    buffer.Append(t);
+                    buffer.Append('\n');
                 }
+
+                Clipboard.SetText(buffer.ToString());
             }
             catch (Exception ex)
             {
@@ -358,7 +350,7 @@ namespace DocCorruptionChecker
         // add current character to the node buffer
         public static void Node(char input)
         {
-            sbNodeBuffer.Append(input);
+            _sbNodeBuffer.Append(input);
         }
         
         /// <summary>
@@ -372,19 +364,19 @@ namespace DocCorruptionChecker
             bool isFallback = false;
             List<string> fallback = new List<string>();
 
-            foreach (object o in nodes)
+            foreach (string o in _nodes)
             {
-                if (o.ToString() == txtFallbackStart)
+                if (o == TxtFallbackStart)
                 {
                     isFallback = true;
                 }
 
                 if (isFallback)
                 {
-                    fallback.Add(o.ToString());
+                    fallback.Add(o);
                 }
 
-                if (o.ToString() == txtFallbackEnd)
+                if (o == TxtFallbackEnd)
                 {
                     isFallback = false;
                 }
@@ -403,41 +395,35 @@ namespace DocCorruptionChecker
         /// <param name="originalText"></param>
         public static void ParseOutFallbackTags(List<string> input, string originalText)
         {
-            List<string> FallbackTagsAppended = new List<string>();
+            List<string> fallbackTagsAppended = new List<string>();
             StringBuilder sbFallback = new StringBuilder();
 
             foreach (object o in input)
             {
-                if (o.ToString() == txtFallbackStart)
+                switch (o.ToString())
                 {
-                    sbFallback.Append(o);
-                    continue;
-                }
-                else if (o.ToString() == txtFallbackEnd)
-                {
-                    sbFallback.Append(o);
-                    FallbackTagsAppended.Add(sbFallback.ToString());
-                    sbFallback.Clear();
-                    continue;
-                }
-                else
-                {
-                    sbFallback.Append(o);
-                    continue;
+                    case TxtFallbackStart:
+                        sbFallback.Append(o);
+                        continue;
+                    case TxtFallbackEnd:
+                        sbFallback.Append(o);
+                        fallbackTagsAppended.Add(sbFallback.ToString());
+                        sbFallback.Clear();
+                        continue;
+                    default:
+                        sbFallback.Append(o);
+                        continue;
                 }
             }
 
             sbFallback.Clear();
 
             // loop each item in the list and remove it from the document
-            foreach (object o in FallbackTagsAppended)
-            {
-                originalText = originalText.Replace(o.ToString(), "");
-            }
+            originalText = fallbackTagsAppended.Aggregate(originalText, (current, o) => current.Replace(o.ToString(), ""));
 
             // each set of fallback tags should now be removed from the text
             // set it to the global variable so we can add it back into document.xml
-            fixedFallback = originalText;
+            FixedFallback = originalText;
         }
 
         /// <summary>
@@ -446,7 +432,7 @@ namespace DocCorruptionChecker
         /// warn the user to try remove all fallback tags
         /// </summary>
         /// <param name="file">the path to the initial fix attempt</param>
-        public void OpenWithSDK(string file)
+        public void OpenWithSdk(string file)
         {
             try
             {

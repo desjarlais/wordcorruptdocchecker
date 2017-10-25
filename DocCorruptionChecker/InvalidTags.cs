@@ -2,7 +2,7 @@
 
 namespace DocCorruptionChecker
 {
-    class InvalidTags
+    internal class InvalidTags
     {
         /// <summary>
         /// This section contains the RegEx strings that are used to parse the document and find the invalid tags
@@ -13,11 +13,11 @@ namespace DocCorruptionChecker
         /// <mc:AlternateContent><mc:Choice Requires=\"wps\"><m:oMath>
         /// There is also a corruption that happens with textboxes not getting closed out correctly
         /// </summary>
-        public const string strInvalidOmathWps = "<mc:AlternateContent><mc:Choice Requires=\"wps\"><m:oMath>";
-        public const string strInvalidOmathWpg = "<mc:AlternateContent><mc:Choice Requires=\"wpg\"><m:oMath>";
-        public const string strInvalidOmathWpi = "<mc:AlternateContent><mc:Choice Requires=\"wpi\"><m:oMath>";
-        public const string strInvalidOmathWpc = "<mc:AlternateContent><mc:Choice Requires=\"wpc\"><m:oMath>";
-        public const string strInvalidVshape = "</w:txbxContent></w:pict></mc:Fallback></mc:AlternateContent>";
+        public const string StrInvalidOmathWps = "<mc:AlternateContent><mc:Choice Requires=\"wps\"><m:oMath>";
+        public const string StrInvalidOmathWpg = "<mc:AlternateContent><mc:Choice Requires=\"wpg\"><m:oMath>";
+        public const string StrInvalidOmathWpi = "<mc:AlternateContent><mc:Choice Requires=\"wpi\"><m:oMath>";
+        public const string StrInvalidOmathWpc = "<mc:AlternateContent><mc:Choice Requires=\"wpc\"><m:oMath>";
+        public const string StrInvalidVshape = "</w:txbxContent></w:pict></mc:Fallback></mc:AlternateContent>";
 
         /// <summary>
         /// This section contains the RegEx values to check for invalid tags that are not always the exact same sequence
@@ -27,18 +27,18 @@ namespace DocCorruptionChecker
         /// 1. <mc:Fallback><w:pict/> - sometimes there is no end tag so we can just omit the fallback
         /// 2. <mc:Fallback><w:pict/></mc:Fallback> - this case has an actual end tag for the fallback, but it's still invalid so we can omit the tag completely
         /// </summary>
-        public const string strInvalidMcChoiceRegex = @"(</mc:Choice>)(<(.).*?(/>|>))";
-        public const string strInvalidFallbackRegex = @"(<mc:Fallback><w:pict/>)(<(.).*?(/>|>))";
+        public const string StrInvalidMcChoiceRegex = @"(</mc:Choice>)(<(.).*?(/>|>))";
+        public const string StrInvalidFallbackRegex = @"(<mc:Fallback><w:pict/>)(<(.).*?(/>|>))";
 
-        public IEnumerable<string> invalidXmlTags()
+        public IEnumerable<string> InvalidXmlTags()
         {
-            yield return strInvalidOmathWps;
-            yield return strInvalidOmathWpg;
-            yield return strInvalidOmathWpi;
-            yield return strInvalidOmathWpc;
-            yield return strInvalidMcChoiceRegex;
-            yield return strInvalidFallbackRegex;
-            yield return strInvalidVshape;
+            yield return StrInvalidOmathWps;
+            yield return StrInvalidOmathWpg;
+            yield return StrInvalidOmathWpi;
+            yield return StrInvalidOmathWpc;
+            yield return StrInvalidMcChoiceRegex;
+            yield return StrInvalidFallbackRegex;
+            yield return StrInvalidVshape;
         }
     }
 }

@@ -13,8 +13,8 @@ namespace DocCorruptionChecker
 {
     public partial class FrmMain : Form
     {
-        static List<string> _nodes = new List<string>();
-        static StringBuilder _sbNodeBuffer = new StringBuilder();
+        private static List<string> _nodes = new List<string>();
+        private static StringBuilder _sbNodeBuffer = new StringBuilder();
 
         private const string TxtFallbackStart = "<mc:Fallback>";
         private const string TxtFallbackEnd = "</mc:Fallback>";
@@ -98,7 +98,7 @@ namespace DocCorruptionChecker
                             catch (XmlException) // invalid xml found, try to fix the contents
                             {
                                 MemoryStream ms = new MemoryStream();
-                                var invalid = new InvalidTags();
+                                InvalidTags invalid = new InvalidTags();
 
                                 using (TextWriter tw = new StreamWriter(ms))
                                 {
@@ -106,7 +106,7 @@ namespace DocCorruptionChecker
                                     {
                                         string strDocText = tr.ReadToEnd();
 
-                                        foreach (var el in invalid.InvalidXmlTags())
+                                        foreach (string el in invalid.InvalidXmlTags())
                                         {
                                             foreach (Match m in Regex.Matches(strDocText, el))
                                             {

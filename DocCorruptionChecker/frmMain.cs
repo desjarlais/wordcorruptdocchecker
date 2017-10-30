@@ -198,7 +198,7 @@ namespace DocCorruptionChecker
 
                                         // remove all fallback tags is a 3 step process
                                         // Step 1. start by getting a list of all nodes/values in the document.xml file
-                                        if (Properties.Settings.Default.RemoveFallback.ToString() == "true")
+                                        if (Properties.Settings.Default.RemoveFallback == "true")
                                         {
                                             CharEnumerator charEnum = strDocText.GetEnumerator();
                                             while (charEnum.MoveNext())
@@ -263,7 +263,7 @@ namespace DocCorruptionChecker
                                         IsFixed = true;
 
                                         // open the file in Word
-                                        if (Properties.Settings.Default.OpenInWord == "true")
+                                        if (Properties.Settings.Default.OpenInWord == "true" && IsFixed)
                                         {
                                             Process.Start("winword", StrDestFileName);
                                         }
@@ -369,7 +369,7 @@ namespace DocCorruptionChecker
         public static void GetAllNodes(string originalText)
         {
             bool isFallback = false;
-            List<string> fallback = new List<string>();
+            var fallback = new List<string>();
 
             foreach (string o in _nodes)
             {
@@ -402,7 +402,7 @@ namespace DocCorruptionChecker
         /// <param name="originalText"></param>
         public static void ParseOutFallbackTags(List<string> input, string originalText)
         {
-            List<string> fallbackTagsAppended = new List<string>();
+            var fallbackTagsAppended = new List<string>();
             StringBuilder sbFallback = new StringBuilder();
 
             foreach (object o in input)

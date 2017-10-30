@@ -8,45 +8,14 @@ namespace DocCorruptionChecker
         {
             InitializeComponent();
 
-            if (Properties.Settings.Default.RemoveFallback.ToString() == "true")
-            {
-                ckRemoveFallback.Checked = true;
-            }
-            else
-            {
-                ckRemoveFallback.Checked = false;
-            }
-
-            if (Properties.Settings.Default.OpenInWord == "true")
-            {
-                ckOpenInWord.Checked = true;
-            }
-            else
-            {
-                ckOpenInWord.Checked = false;
-            }
+            ckRemoveFallback.Checked = Properties.Settings.Default.RemoveFallback == "true";
+            ckOpenInWord.Checked = Properties.Settings.Default.OpenInWord == "true";
         }
 
         private void BtnOk_Click(object sender, System.EventArgs e)
         {
-            if (ckRemoveFallback.Checked)
-            {
-                Properties.Settings.Default.RemoveFallback = "true";
-            }
-            else
-            {
-                Properties.Settings.Default.RemoveFallback = "false";
-            }
-
-            if (ckOpenInWord.Checked)
-            {
-                Properties.Settings.Default.OpenInWord = "true";
-            }
-            else
-            {
-                Properties.Settings.Default.OpenInWord = "false";
-            }
-
+            Properties.Settings.Default.RemoveFallback = ckRemoveFallback.Checked ? "true" : "false";
+            Properties.Settings.Default.OpenInWord = ckOpenInWord.Checked ? "true" : "false";
             Close();
         }
 

@@ -8,6 +8,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using System.Diagnostics;
 
 namespace DocCorruptionChecker
 {
@@ -197,7 +198,7 @@ namespace DocCorruptionChecker
 
                                         // remove all fallback tags is a 3 step process
                                         // Step 1. start by getting a list of all nodes/values in the document.xml file
-                                        if (chkRemoveAllFallbackTags.Checked)
+                                        if (Properties.Settings.Default.RemoveFallback.ToString() == "true")
                                         {
                                             CharEnumerator charEnum = strDocText.GetEnumerator();
                                             while (charEnum.MoveNext())
@@ -260,6 +261,12 @@ namespace DocCorruptionChecker
                                         lstOutput.Items.Add("-------------------------------------------------------------");
                                         lstOutput.Items.Add("Fixed Document Location: " + StrDestFileName);
                                         IsFixed = true;
+
+                                        // open the file in Word
+                                        if (Properties.Settings.Default.OpenInWord == "true")
+                                        {
+                                            Process.Start("winword", StrDestFileName);
+                                        }
                                     }
                                 }
                             }
@@ -454,6 +461,12 @@ namespace DocCorruptionChecker
                 lstOutput.Items.Add("Secondary check failed, not all corrupt tags were fixed.");
                 lstOutput.Items.Add("Try using the Remove Fallback option.");
             }
+        }
+
+        private void BtnSettings_Click(object sender, EventArgs e)
+        {
+            FrmSettings form = new FrmSettings();
+            form.Show();
         }
     }
 }

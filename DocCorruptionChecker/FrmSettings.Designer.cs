@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmSettings));
             this.ckRemoveFallback = new System.Windows.Forms.CheckBox();
             this.ckOpenInWord = new System.Windows.Forms.CheckBox();
             this.btnOk = new System.Windows.Forms.Button();
@@ -37,8 +38,8 @@
             // ckRemoveFallback
             // 
             this.ckRemoveFallback.AutoSize = true;
-            this.ckRemoveFallback.Location = new System.Drawing.Point(12, 18);
-            this.ckRemoveFallback.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckRemoveFallback.Location = new System.Drawing.Point(11, 11);
+            this.ckRemoveFallback.Margin = new System.Windows.Forms.Padding(2);
             this.ckRemoveFallback.Name = "ckRemoveFallback";
             this.ckRemoveFallback.Size = new System.Drawing.Size(150, 17);
             this.ckRemoveFallback.TabIndex = 0;
@@ -48,8 +49,8 @@
             // ckOpenInWord
             // 
             this.ckOpenInWord.AutoSize = true;
-            this.ckOpenInWord.Location = new System.Drawing.Point(12, 45);
-            this.ckOpenInWord.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckOpenInWord.Location = new System.Drawing.Point(11, 32);
+            this.ckOpenInWord.Margin = new System.Windows.Forms.Padding(2);
             this.ckOpenInWord.Name = "ckOpenInWord";
             this.ckOpenInWord.Size = new System.Drawing.Size(170, 17);
             this.ckOpenInWord.TabIndex = 1;
@@ -58,8 +59,8 @@
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(74, 81);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnOk.Location = new System.Drawing.Point(102, 53);
+            this.btnOk.Margin = new System.Windows.Forms.Padding(2);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(50, 24);
             this.btnOk.TabIndex = 2;
@@ -69,26 +70,27 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(126, 81);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Location = new System.Drawing.Point(156, 53);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(54, 24);
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // FrmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(210, 119);
+            this.ClientSize = new System.Drawing.Size(218, 82);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.ckOpenInWord);
             this.Controls.Add(this.ckRemoveFallback);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "FrmSettings";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

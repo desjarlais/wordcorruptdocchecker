@@ -19,7 +19,7 @@ namespace DocCorruptionChecker
             Close();
         }
 
-        private void btnCancel_Click(object sender, System.EventArgs e)
+        private void BtnCancel_Click(object sender, System.EventArgs e)
         {
             Close();
         }

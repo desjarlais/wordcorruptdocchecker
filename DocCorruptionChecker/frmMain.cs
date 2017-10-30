@@ -263,7 +263,7 @@ namespace DocCorruptionChecker
                                         IsFixed = true;
 
                                         // open the file in Word
-                                        if (Properties.Settings.Default.OpenInWord == "true" && IsFixed)
+                                        if (Properties.Settings.Default.OpenInWord == "true")
                                         {
                                             Process.Start("winword", StrDestFileName);
                                         }

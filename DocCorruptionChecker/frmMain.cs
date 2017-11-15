@@ -242,6 +242,9 @@ namespace DocCorruptionChecker
                                                         Node(charEnum.Current);
                                                         break;
                                                 }
+
+                                                // cleanup
+                                                charEnum.Dispose();
                                             }
 
                                             lstOutput.Items.Add("...removing all fallback tags");

@@ -268,7 +268,7 @@ namespace DocCorruptionChecker
                                         // open the file in Word
                                         if (Properties.Settings.Default.OpenInWord == "true")
                                         {
-                                            Process.Start("winword", StrDestFileName);
+                                            Process.Start(StrDestFileName);
                                         }
                                     }
                                 }

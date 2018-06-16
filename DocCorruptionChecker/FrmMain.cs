@@ -242,6 +242,9 @@ namespace DocCorruptionChecker
                                                         Node(charEnum.Current);
                                                         break;
                                                 }
+
+                                                // cleanup
+                                                charEnum.Dispose();
                                             }
 
                                             lstOutput.Items.Add("...removing all fallback tags");
@@ -463,11 +466,6 @@ namespace DocCorruptionChecker
             }
         }
 
-        /// <summary>
-        /// Display the settings dialog
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BtnSettings_Click(object sender, EventArgs e)
         {
             FrmSettings form = new FrmSettings();

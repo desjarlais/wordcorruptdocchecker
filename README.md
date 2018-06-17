@@ -10,5 +10,5 @@ The tool requires the .NET framework version 4.6.1 or higher.
  
 To download a standalone version of the tool, go to the Release section of this page or use the following link:
 
-https://github.com/desjarlais/wordcorruptdocchecker/releases/tag/v.1.2.1.8
+https://github.com/desjarlais/wordcorruptdocchecker/releases/tag/v.1.2.1.9
 

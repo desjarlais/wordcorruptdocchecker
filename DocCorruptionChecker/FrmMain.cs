@@ -264,12 +264,6 @@ namespace DocCorruptionChecker
                                         lstOutput.Items.Add("-------------------------------------------------------------");
                                         lstOutput.Items.Add("Fixed Document Location: " + StrDestFileName);
                                         IsFixed = true;
-
-                                        // open the file in Word
-                                        if (Properties.Settings.Default.OpenInWord == "true")
-                                        {
-                                            Process.Start(StrDestFileName);
-                                        }
                                     }
                                 }
                             }
@@ -316,6 +310,12 @@ namespace DocCorruptionChecker
                     // check if we can open in the sdk and confirm it was indeed fixed
                     lstOutput.Items.Add("");
                     OpenWithSdk(StrDestFileName);
+                }
+
+                // open the file in Word
+                if (Properties.Settings.Default.OpenInWord == "true")
+                {
+                    Process.Start(StrDestFileName);
                 }
 
                 // need to reset the globals 
